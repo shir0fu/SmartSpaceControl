@@ -2,7 +2,7 @@
 
 namespace SmartSpaceControl.Models;
 
-public class User : IdentityUser
+public partial class User : IdentityUser
 {
-    
+
 }
