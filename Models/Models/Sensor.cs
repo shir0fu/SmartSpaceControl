@@ -1,4 +1,4 @@
-﻿namespace SmartSpaceControl.Models;
+﻿namespace SmartSpaceControl.Models.Models;
 
 public class Sensor
 {

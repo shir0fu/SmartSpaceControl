@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using SmartSpaceControl.Models;
+using SmartSpaceControl.Models.Models;
 
 namespace SmartSpaceControl.Data
 {
@@ -12,6 +12,7 @@ namespace SmartSpaceControl.Data
         public virtual DbSet<Sensor> Sensors { get; set; }
         public virtual DbSet<Measure> Measures { get; set; }
         public virtual DbSet<SensorType> SensorTypes { get; set; }
+        public virtual DbSet<UserToken> UserTokens { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
