@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen(c =>
 
 
 // dependency injection
-//builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 
 
@@ -39,11 +39,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseAuthentication();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
 
 app.MapControllers();
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartSpaceControl.Models.Models;
 using SmartSpaceControl.Services;
+using System.Globalization;
 
 namespace SmartSpaceControl.Controllers;
 
@@ -8,10 +9,12 @@ namespace SmartSpaceControl.Controllers;
 public class UserController : ControllerBase
 {
     private readonly ISessionService _sessionService;
+    private readonly IUserService _userService;
 
-    public UserController(ISessionService sessionService)
+    public UserController(ISessionService sessionService, IUserService userService)
     {
         _sessionService = sessionService;
+        _userService = userService;
     }
 
     [HttpPost("/login")]
@@ -19,5 +22,12 @@ public class UserController : ControllerBase
     {
         var token = await _sessionService.Authenticate(userCredential.Login, userCredential.Password);
         return Ok(token);
+    }
+
+    [HttpPost("/register")]
+    public async Task<IActionResult> Register(UserRegisterModel userRegisterModel)
+    {
+        await _userService.RegisterUser(userRegisterModel);
+        return Ok();
     }
 }
