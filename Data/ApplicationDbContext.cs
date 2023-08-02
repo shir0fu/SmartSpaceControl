@@ -13,6 +13,7 @@ namespace SmartSpaceControl.Data
         public virtual DbSet<Measure> Measures { get; set; }
         public virtual DbSet<SensorType> SensorTypes { get; set; }
         public virtual DbSet<UserToken> UserTokens { get; set; }
+        public virtual DbSet<Area> Areas { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
