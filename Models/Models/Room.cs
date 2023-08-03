@@ -1,4 +1,7 @@
-﻿namespace SmartSpaceControl.Models.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartSpaceControl.Data;
+
+namespace SmartSpaceControl.Models.Models;
 
 public class Room
 {

@@ -8,10 +8,10 @@ namespace SmartSpaceControl.Services;
 public interface IAreaService
 {
     public Task CreateArea(Area newArea);
-    public Task DeleteArea(Area area);
-    public Task EditArea(Area newArea);
     public Task<IEnumerable<Area>> GetAreas(string userEmail);
-
+    public Task UpdateArea(Area newArea);
+    public Task DeleteArea(Area area);
+    
 }
 
 public class AreaService : IAreaService
@@ -28,16 +28,6 @@ public class AreaService : IAreaService
         await _dbContext.Areas.AddAsync(newArea);
         await _dbContext.SaveChangesAsync();
     }
-    public async Task DeleteArea(Area area)
-    {
-        _dbContext.Areas.Remove(area);
-        await _dbContext.SaveChangesAsync();
-    }
-    public async Task EditArea(Area newArea)
-    {
-        _dbContext.Areas.Update(newArea);
-        await _dbContext.SaveChangesAsync();
-    }
     public async Task<IEnumerable<Area>> GetAreas(string userEmail)
     {
         User? user = await _userManager.FindByEmailAsync(userEmail);
@@ -47,4 +37,17 @@ public class AreaService : IAreaService
         IEnumerable<Area> areas = _dbContext.Areas.Where(x => x.UserId == user.Id);
         return areas;
     }
+
+    public async Task UpdateArea(Area newArea)
+    {
+        _dbContext.Areas.Update(newArea);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteArea(Area area)
+    {
+        _dbContext.Areas.Remove(area);
+        await _dbContext.SaveChangesAsync();
+    }
+
 }

@@ -7,10 +7,10 @@ namespace SmartSpaceControl.Services;
 
 public interface IRoomService
 {
-    public Task<IEnumerable<Room>> GetRooms(string userEmail, int areaId);
     public Task CreateRoom(Room newArea);
+    public Task<IEnumerable<Room>> GetRooms(string userEmail, int areaId);
+    public Task UpdateRoom(Room newArea);
     public Task DeleteRoom(Room area);
-    public Task EditRoom(Room newArea);
 }
 public class RoomService : IRoomService
 {
@@ -28,30 +28,27 @@ public class RoomService : IRoomService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteRoom(Room area)
-    {
-        _dbContext.Rooms.Remove(area);
-        await _dbContext.SaveChangesAsync();
-    }
-
-    public async Task EditRoom(Room newRoom)
-    {
-        _dbContext.Rooms.Update(newRoom);
-        await _dbContext.SaveChangesAsync();
-    }
-
     public async Task<IEnumerable<Room>> GetRooms(string userEmail, int areaId)
     {
         User? user = await _userManager.FindByEmailAsync(userEmail);
 
         CheckHelper.CheckNull(user);
 
-        Area? area = _dbContext.Areas.Where(x => x.Id == areaId && x.UserId == user.Id).FirstOrDefault();
-
-        CheckHelper.CheckNull(area, "Area not found!");
-
         IEnumerable<Room> rooms = _dbContext.Rooms.Where(x => x.AreaId == areaId);
 
         return rooms;
     }
+
+    public async Task UpdateRoom(Room newRoom)
+    {
+        _dbContext.Rooms.Update(newRoom);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteRoom(Room area)
+    {
+        _dbContext.Rooms.Remove(area);
+        await _dbContext.SaveChangesAsync();
+    }
+
 }

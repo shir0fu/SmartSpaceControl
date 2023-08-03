@@ -285,7 +285,7 @@ namespace SmartSpaceControl.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AreaId")
+                    b.Property<int?>("AreaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -458,14 +458,12 @@ namespace SmartSpaceControl.Data.Migrations
                 {
                     b.HasOne("SmartSpaceControl.Models.Models.Area", null)
                         .WithMany("Rooms")
-                        .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AreaId");
                 });
 
             modelBuilder.Entity("SmartSpaceControl.Models.Models.Sensor", b =>
                 {
-                    b.HasOne("SmartSpaceControl.Models.Models.Room", "Room")
+                    b.HasOne("SmartSpaceControl.Models.Models.Room", null)
                         .WithMany("Sensors")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -476,8 +474,6 @@ namespace SmartSpaceControl.Data.Migrations
                         .HasForeignKey("SensorTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Room");
 
                     b.Navigation("SensorType");
                 });
