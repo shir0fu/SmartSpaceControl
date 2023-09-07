@@ -32,22 +32,13 @@ public class SessionService : ISessionService
 
     public async Task<TokenDto> Authenticate(string email, string password)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        user = await _userManager.FindByNameAsync(email);
-        if (user == null)
-        {
-            throw new InvalidDataException("User not found");
-        }
+        var user = await _userManager.FindByEmailAsync(email) ?? throw new InvalidDataException("User not found");
+
         var isPasswordValid = _userManager.CheckPasswordAsync(user, password).Result;
 
-        if (!isPasswordValid)
-            throw new InvalidDataException("Password is wrong");
-
-        if (!user.EmailConfirmed)
-            throw new Exception("Your email is not confirmed");
-
-        if (await _userManager.GetLockoutEnabledAsync(user))
-            throw new Exception("Can't login");
+        if (!isPasswordValid) { throw new InvalidDataException("Password is wrong"); }
+        //if (!user.EmailConfirmed) { throw new Exception("Your email is not confirmed"); }      
+        //if (await _userManager.GetLockoutEnabledAsync(user)) { throw new Exception("Can't login"); }        
 
         var token = JwtHelper.GenerateAccessToken(_configuration, email, _userManager, user);
         var refreshToken = JwtHelper.GenerateRefreshToken();

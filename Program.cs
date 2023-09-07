@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 // app services
+builder.Services.AddCors();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
@@ -26,7 +27,9 @@ builder.Services.AddScoped<ISessionService, SessionService>();
 
 
 var app = builder.Build();
-
+app.UseCors(builder => builder.AllowAnyOrigin()
+                             .AllowAnyHeader()
+                            .AllowAnyMethod());
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {

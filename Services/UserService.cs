@@ -19,15 +19,18 @@ public class UserService : IUserService
     public async Task RegisterUser(UserRegisterModel userRegisterModel)
     {
         User? existingUser = await _userManager.FindByEmailAsync(userRegisterModel.Email);
+
         if (existingUser != null)
         {
             throw new Exception("User with " + userRegisterModel.Email + " email already registered!");
         }
+
         User newUser = new User()
         {
             Email = userRegisterModel.Email,
             UserName = string.IsNullOrEmpty(userRegisterModel.UserName) ? userRegisterModel.Email : userRegisterModel.UserName
         };
+
         var result = await _userManager.CreateAsync(newUser);
         if (result.Succeeded)
         {
@@ -41,6 +44,5 @@ public class UserService : IUserService
         {
             CheckHelper.ThrowResultExeptions(result);
         }
-        
     }
 }

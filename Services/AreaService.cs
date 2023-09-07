@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SmartSpaceControl.Data;
+using SmartSpaceControl.Models.Dto;
 using SmartSpaceControl.Models.Models;
 using SmartSpaceControl.Services.Helpers;
+using System.Security.Claims;
+
 
 namespace SmartSpaceControl.Services;
 
 public interface IAreaService
 {
-    public Task CreateArea(Area newArea);
-    public Task<IEnumerable<Area>> GetAreas(string userEmail);
+    public Task CreateArea(AreaDto newArea);
+    public Task<IEnumerable<Area>> GetAreas();
     public Task UpdateArea(Area newArea);
     public Task DeleteArea(Area area);
     
@@ -18,23 +21,34 @@ public class AreaService : IAreaService
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly UserManager<User> _userManager;
-    public AreaService(ApplicationDbContext dbContext, UserManager<User> userManager)
+    private readonly SignInManager<User> _signInManager;
+
+    public AreaService(ApplicationDbContext dbContext, UserManager<User> userManager, SignInManager<User> signInManager)
     {
         _dbContext = dbContext;
         _userManager = userManager;
+        _signInManager = signInManager;
     }
-    public async Task CreateArea(Area newArea)
+    public async Task CreateArea(AreaDto newArea)
     {
-        await _dbContext.Areas.AddAsync(newArea);
+        var currentUser = await _userManager.GetUserAsync(_signInManager.Context.User);
+        CheckHelper.CheckNull(currentUser);
+
+        Area area = new Area()
+        {
+            Name = newArea.Name,
+            Description = newArea.Description,
+            UserId = currentUser.Id
+        };
+        await _dbContext.Areas.AddAsync(area);
         await _dbContext.SaveChangesAsync();
     }
-    public async Task<IEnumerable<Area>> GetAreas(string userEmail)
+    public async Task<IEnumerable<Area>> GetAreas()
     {
-        User? user = await _userManager.FindByEmailAsync(userEmail);
+        var currentUser = await _userManager.GetUserAsync(_signInManager.Context.User);
+        CheckHelper.CheckNull(currentUser);
 
-        CheckHelper.CheckNull(user);
-
-        IEnumerable<Area> areas = _dbContext.Areas.Where(x => x.UserId == user.Id);
+        IEnumerable<Area> areas = _dbContext.Areas.Where(x => x.UserId == currentUser.Id);
         return areas;
     }
 

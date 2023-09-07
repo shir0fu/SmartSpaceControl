@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartSpaceControl.Models.Models;
 using SmartSpaceControl.Services;
+using System.Security.Cryptography;
 
 
 namespace SmartSpaceControl.Controllers;
