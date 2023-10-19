@@ -43,6 +43,8 @@ public class JwtHelper
             new(ClaimTypes.Email, userName),
             new(ClaimTypes.NameIdentifier, user.Id)
             }),
+            Audience = "SmartSpaceControl",
+            Issuer = "https://localhost:7187",
             Expires = DateTime.UtcNow.AddMinutes(expires),
             SigningCredentials = new SigningCredentials
                 (new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)

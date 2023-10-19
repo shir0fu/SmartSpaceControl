@@ -22,12 +22,14 @@ public class SessionService : ISessionService
     public readonly IConfiguration _configuration;
     private readonly ApplicationDbContext _dbContext;
     private readonly UserManager<User> _userManager;
-    public SessionService(IServiceScopeFactory scopeFactory, IConfiguration configuration, ApplicationDbContext dbContext, UserManager<User> userManager)
+    private readonly SignInManager<User> _signInManager;
+    public SessionService(IServiceScopeFactory scopeFactory, IConfiguration configuration, ApplicationDbContext dbContext, UserManager<User> userManager, SignInManager<User> signInManager)
     {
         _scopeFactory = scopeFactory;
         _configuration = configuration;
         _dbContext = dbContext;
         _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     public async Task<TokenDto> Authenticate(string email, string password)
@@ -39,6 +41,8 @@ public class SessionService : ISessionService
         if (!isPasswordValid) { throw new InvalidDataException("Password is wrong"); }
         //if (!user.EmailConfirmed) { throw new Exception("Your email is not confirmed"); }      
         //if (await _userManager.GetLockoutEnabledAsync(user)) { throw new Exception("Can't login"); }        
+
+        await _signInManager.SignInAsync(user, false);
 
         var token = JwtHelper.GenerateAccessToken(_configuration, email, _userManager, user);
         var refreshToken = JwtHelper.GenerateRefreshToken();
@@ -72,7 +76,6 @@ public class SessionService : ISessionService
 
         _dbContext.UserTokens.Add(userToken);
         await _dbContext.SaveChangesAsync();
-
         return model;
     }
 

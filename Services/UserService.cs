@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SmartSpaceControl.Models.Models;
+using SmartSpaceControl.Repository;
 using SmartSpaceControl.Services.Helpers;
 
 namespace SmartSpaceControl.Services;
@@ -7,14 +8,17 @@ namespace SmartSpaceControl.Services;
 public interface IUserService
 {
     public Task RegisterUser(UserRegisterModel userRegisterModel);
+    public Task<User> GetCurrentUser(HttpContext httpContext);
 }
 
 public class UserService : IUserService
 {
     private readonly UserManager<User> _userManager;
-    public UserService(UserManager<User> userManager)
+    private readonly IUserRepository _userRepository;
+    public UserService(UserManager<User> userManager, IUserRepository userRepository)
     {
         _userManager = userManager;
+        _userRepository = userRepository;
     }
     public async Task RegisterUser(UserRegisterModel userRegisterModel)
     {
@@ -44,5 +48,21 @@ public class UserService : IUserService
         {
             CheckHelper.ThrowResultExeptions(result);
         }
+    }
+
+    public async Task<User> GetCurrentUser(HttpContext httpContext)
+    {
+        var token = httpContext.Request.Headers.Authorization.ToString();
+        token = token.Replace("Bearer ", "");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        var user = await _userRepository.GetUserByAuthToken(token);
+        CheckHelper.CheckNull(user, "Current user not foud.");
+
+        return user;
     }
 }

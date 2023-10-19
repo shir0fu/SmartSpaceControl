@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartSpaceControl.Models.Dto;
 using SmartSpaceControl.Models.Models;
 using SmartSpaceControl.Services;
-
+using System.Security.Claims;
 
 namespace SmartSpaceControl.Controllers;
 
 [ApiController]
-[Authorize]
 public class AreaController : ControllerBase
 {
     private readonly ISessionService _sessionService;
@@ -25,11 +25,12 @@ public class AreaController : ControllerBase
     [HttpGet("/areas")]
     public async Task<IActionResult> GetAreas()
     {
-        var areas = await _areaService.GetAreas();
+        var user = await _userService.GetCurrentUser(HttpContext);
+        var areas = await _areaService.GetAreas(user);
         return Ok(areas);
     }
 
-    [HttpGet("/areas")]
+    [HttpGet("/area/create")]
     public async Task<IActionResult> CreateArea(AreaDto newArea)
     {
         await _areaService.CreateArea(newArea);
