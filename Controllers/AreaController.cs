@@ -30,10 +30,28 @@ public class AreaController : ControllerBase
         return Ok(areas);
     }
 
-    [HttpGet("/area/create")]
+    [HttpPost("/area/create")]
     public async Task<IActionResult> CreateArea(AreaDto newArea)
     {
-        await _areaService.CreateArea(newArea);
+        var user = await _userService.GetCurrentUser(HttpContext);
+        await _areaService.CreateArea(newArea, user);
         return Ok();
+    }
+
+    [HttpDelete("/area/delete/{id}")]
+    public async Task<IActionResult> DeleteArea(int id)
+    {
+        var user = await _userService.GetCurrentUser(HttpContext);
+        await _areaService.DeleteArea(user, id);
+        return Ok();
+    }
+
+    [HttpGet("/area/{id}")]
+    public async Task<IActionResult> GetArea(int id)
+    {
+        var user = await _userService.GetCurrentUser(HttpContext);
+        var area = await _areaService.GetAreaById(user, id);
+
+        return Ok(area);
     }
 }

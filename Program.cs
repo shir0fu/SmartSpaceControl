@@ -39,8 +39,8 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "https://localhost:7187", // Замените на свой issuer
-        ValidAudience = "SmartSpaceControl", // Замените на свой audience
+        ValidIssuer = "https://localhost:7187",
+        ValidAudience = "SmartSpaceControl",
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(test))
     };
 });

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SmartSpaceControl.Data;
 using SmartSpaceControl.Models.Dto;
 using SmartSpaceControl.Models.Models;
@@ -10,11 +11,11 @@ namespace SmartSpaceControl.Services;
 
 public interface IAreaService
 {
-    public Task CreateArea(AreaDto newArea);
+    public Task CreateArea(AreaDto newArea, User user);
     public Task<IEnumerable<Area>> GetAreas(User user);
     public Task UpdateArea(Area newArea);
-    public Task DeleteArea(Area area);
-    
+    public Task DeleteArea(User user, int id);
+    public Task<Area> GetAreaById(User user, int id);
 }
 
 public class AreaService : IAreaService
@@ -30,16 +31,13 @@ public class AreaService : IAreaService
         _signInManager = signInManager;
     }
 
-    public async Task CreateArea(AreaDto newArea)
+    public async Task CreateArea(AreaDto newArea, User user)
     {
-        var currentUser = await _userManager.GetUserAsync(_signInManager.Context.User);
-        CheckHelper.CheckNull(currentUser);
-
         Area area = new Area()
         {
             Name = newArea.Name,
             Description = newArea.Description,
-            UserId = currentUser.Id
+            UserId = user.Id
         };
         await _dbContext.Areas.AddAsync(area);
         await _dbContext.SaveChangesAsync();
@@ -57,10 +55,19 @@ public class AreaService : IAreaService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteArea(Area area)
+    public async Task DeleteArea(User user, int id)
     {
+        var area = await GetAreaById(user, id);
         _dbContext.Areas.Remove(area);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<Area> GetAreaById(User user, int id)
+    {
+        var area = await _dbContext.Areas.Where(x => x.Id == id && x.UserId == user.Id).FirstOrDefaultAsync();
+        CheckHelper.CheckNull(area, "Area not found");
+
+        return area;
     }
 
 }
